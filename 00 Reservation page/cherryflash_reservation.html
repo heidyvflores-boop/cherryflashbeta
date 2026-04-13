@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CherryFlash · Reserve a Camera</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Sofia+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8f4f5;
+      --bg-card: #fffafa;
+      --bg-soft: #f6e6e9;
+      --bg-pink: #eec8cf;
+      --pink: #ae5969;
+      --pink-light: #ce8a97;
+      --pink-pale: #f2dde1;
+      --pink-hover: #964b59;
+      --text: #412722;
+      --text-mid: #634a45;
+      --text-dim: #b9939b;
+      --border: rgba(99,74,69,0.14);
+      --border-soft: rgba(65,39,34,0.08);
+      --display: 'Marck Script', cursive;
+      --sans: 'Sofia Sans', sans-serif;
+      --radius: 18px;
+      --green: #6a9e73;
+      --green-pale: #e9f4eb;
+      --red: #c46060;
+      --red-pale: #fbe9e9;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(248,244,245,0.97); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-left { display: flex; align-items: center; gap: 6px; }
+    .nav-brand { font-family: var(--display); font-size: 22px; color: var(--text); }
+    .nav-sub { font-size: 10px; color: var(--text-dim); letter-spacing: 0.04em; margin-left: 4px; }
+    .nav-links { display: flex; gap: 28px; font-size: 11px; letter-spacing: 0.06em; color: var(--text-mid); }
+    .nav-links a { text-decoration: none; color: inherit; transition: color 0.2s; cursor: pointer; }
+    .nav-links a:hover { color: var(--pink); }
+.nav-links a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.nav-links a:hover {
+  color: var(--pink);
+}
+
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+    .nav-cta {
+      background: var(--pink); color: #fff; font-size: 11px; letter-spacing: 0.06em;
+      padding: 8px 20px; border-radius: 100px; cursor: pointer;
+      transition: background 0.2s; border: none; font-family: var(--sans); font-weight: 600;
+    }
+    .nav-cta:hover { background: var(--pink-hover); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: 32px 40px 24px;
+      border-bottom: 1px solid var(--border-soft);
+      background: var(--bg-card);
+      display: flex; align-items: baseline; gap: 16px;
+    }
+    .page-header-title { font-family: var(--display); font-size: 2.4rem; color: var(--text); }
+    .page-header-sub { font-size: 12px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; }
+
+    /* ── MAIN LAYOUT ── */
+    .reservation-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 0;
+      min-height: calc(100vh - 110px);
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel {
+      padding: 32px 36px;
+      border-right: 1px solid var(--border-soft);
+      overflow-y: auto;
+    }
+
+    /* ── STEP SYSTEM ── */
+    .step-label {
+      font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--text-dim); font-weight: 700; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .step-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border-soft);
+    }
+    .section-title {
+      font-family: var(--display); font-size: 1.7rem; color: var(--text);
+      margin-bottom: 20px; line-height: 1.2;
+    }
+
+    /* ── CAMERA GRID ── */
+    .camera-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 40px;
+    }
+
+    .camera-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.22s, transform 0.22s, box-shadow 0.22s;
+      position: relative;
+    }
+    .camera-card:hover {
+      border-color: var(--pink-light);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(174,89,105,0.1);
+    }
+    .camera-card.selected {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(174,89,105,0.15), 0 12px 30px rgba(174,89,105,0.12);
+    }
+    .camera-card.unavailable {
+      opacity: 0.55; cursor: not-allowed;
+    }
+    .camera-card.unavailable:hover { transform: none; box-shadow: none; border-color: var(--border-soft); }
+
+    .camera-img-wrap {
+      height: 160px; background: var(--bg-soft);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative;
+    }
+    .camera-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: saturate(0.88); transition: transform 0.4s ease;
+    }
+    .camera-card:hover .camera-img-wrap img { transform: scale(1.05); }
+    .camera-card.unavailable .camera-img-wrap img { filter: saturate(0) brightness(0.9); }
+
+    .cam-badge {
+      position: absolute; top: 10px; left: 10px;
+      font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 100px; font-weight: 700; z-index: 2;
+    }
+    .cam-badge.available { background: var(--green-pale); color: var(--green); }
+    .cam-badge.unavailable { background: var(--red-pale); color: var(--red); }
+
+    .selected-check {
+      position: absolute; top: 10px; right: 10px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--pink); display: none;
+      align-items: center; justify-content: center;
+      font-size: 12px; color: #fff; z-index: 3;
+    }
+    .camera-card.selected .selected-check { display: flex; }
+
+    .camera-info {
+      padding: 12px 14px 14px;
+    }
+    .camera-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+    .camera-type { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+    .camera-price { font-size: 15px; color: var(--pink); font-weight: 700; }
+    .camera-price-note { font-size: 10px; color: var(--text-dim); font-weight: 400; }
+
+    /* ── CALENDAR ── */
+.calendar-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+    .cal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-bottom: 1px solid var(--border-soft);
+      background: rgba(255,250,250,0.8);
+    }
+    .cal-month { font-family: var(--display); font-size: 1.3rem; color: var(--text); }
+    .cal-nav-btn {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-mid); cursor: pointer; font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.18s, color 0.18s;
+    }
+    .cal-nav-btn:hover { background: var(--pink); color: #fff; border-color: var(--pink); }
+
+.cal-body { padding: 14px 16px; }
+
+.cal-days-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal-cell {
+  height: 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  position: relative;
+}
+    .cal-cell:empty { cursor: default; }
+    .cal-cell.empty { cursor: default; }
+    .cal-cell.past { color: var(--text-dim); cursor: not-allowed; }
+    .cal-cell.unavailable {
+      background: var(--red-pale); color: var(--red);
+      cursor: not-allowed; font-weight: 600;
+      border-radius: 8px;
+    }
+    .cal-cell.available:hover { background: var(--pink-pale); color: var(--pink); }
+    .cal-cell.selected-start,
+    .cal-cell.selected-end {
+      background: var(--pink); color: #fff; font-weight: 700;
+    }
+    .cal-cell.in-range { background: var(--pink-pale); color: var(--pink); border-radius: 0; }
+    .cal-cell.selected-start { border-radius: 50% 0 0 50%; }
+    .cal-cell.selected-end { border-radius: 0 50% 50% 0; }
+    .cal-cell.selected-start.selected-end { border-radius: 50%; }
+    .cal-cell.today { font-weight: 700; }
+    .cal-cell.today::after {
+      content: ''; position: absolute; bottom: 3px;
+      width: 4px; height: 4px; border-radius: 50%; background: var(--pink);
+    }
+
+.cal-legend {
+  display: flex;
+  gap: 24px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border-soft);
+  background: rgba(255,250,250,0.6);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-mid);
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+    /* ── DATE SUMMARY ── */
+.date-summary {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.date-box {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.date-box-label {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.date-box-val {
+  font-size: 17px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.date-box-val.empty {
+  color: var(--text-dim);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 15px;
+}
+
+.duration-box {
+  background: var(--pink-pale);
+  border: 1px solid rgba(174,89,105,0.2);
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.duration-box-label {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--pink);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.duration-box-val {
+  font-size: 24px;
+  color: var(--pink);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.duration-box-unit {
+  font-size: 11px;
+  color: var(--pink-light);
+}
+
+/* ── PICK-UP LOCATION ── */
+.pickup-section {
+  margin: 22px 0 28px;
+  padding: 22px 0 4px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.pickup-head {
+  margin-bottom: 18px;
+}
+
+.pickup-step {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.pickup-title {
+  font-family: var(--display);
+  font-size: 2rem;
+  line-height: 1.2;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.pickup-note {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-mid);
+  max-width: 760px;
+}
+
+.pickup-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.pickup-card {
+  display: block;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+  padding: 18px 18px 16px;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.pickup-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(174, 89, 105, 0.08);
+  border-color: rgba(174, 89, 105, 0.24);
+}
+
+.pickup-card.active {
+  border: 1.5px solid var(--pink);
+  background: #fff7f8;
+  box-shadow: 0 12px 28px rgba(174, 89, 105, 0.1);
+}
+
+.pickup-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.pickup-sub {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-mid);
+  margin-bottom: 8px;
+}
+
+.pickup-time {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pink);
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.pickup-link {
+  font-size: 12px;
+  color: var(--text-mid);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(99,74,69,0.2);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.pickup-link:hover {
+  color: var(--pink);
+  border-color: var(--pink);
+}
+
+@media (max-width: 980px) {
+  .pickup-grid {
+    grid-template-columns: 1fr;
+  }
+}
+    /* ── RIGHT PANEL ── */
+    .right-panel {
+      background: var(--bg-card);
+      border-left: 1px solid var(--border-soft);
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+      max-height: calc(100vh - 56px);
+      position: sticky; top: 56px;
+    }
+
+    .right-section {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .right-section:last-child { border-bottom: none; }
+
+    .right-section-title {
+      font-family: var(--display); font-size: 1.25rem; color: var(--text);
+      margin-bottom: 4px;
+    }
+    .right-section-sub {
+      font-size: 11px; line-height: 1.6; color: var(--text-mid); margin-bottom: 18px;
+    }
+
+    /* ── FORM FIELDS ── */
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-dim); font-weight: 700; margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%; padding: 11px 14px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; font-family: var(--sans); font-size: 13px; color: var(--text);
+      transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+    }
+    .form-input:focus {
+      border-color: var(--pink-light);
+      box-shadow: 0 0 0 3px rgba(174,89,105,0.1);
+    }
+    .form-input::placeholder { color: var(--text-dim); }
+
+    /* ── AGREEMENT ── */
+    .agreement-list { display: flex; flex-direction: column; gap: 10px; }
+    .agreement-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 12px; line-height: 1.6; color: var(--text-mid); cursor: pointer;
+    }
+    .agreement-item input[type="checkbox"] { display: none; }
+    .custom-check {
+      width: 18px; height: 18px; min-width: 18px;
+      border: 1.5px solid var(--border); border-radius: 5px;
+      background: var(--bg); display: flex; align-items: center;
+      justify-content: center; transition: all 0.18s; margin-top: 1px;
+    }
+    .agreement-item input:checked ~ .custom-check {
+      background: var(--pink); border-color: var(--pink);
+    }
+    .custom-check-mark { display: none; color: #fff; font-size: 11px; font-weight: 700; }
+    .agreement-item input:checked ~ .custom-check .custom-check-mark { display: block; }
+
+    /* ── PAYMENT SECTION ── */
+    .payment-trigger-btn {
+      width: 100%;
+      background: transparent; border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 14px 18px;
+      font-family: var(--sans); font-size: 13px; color: var(--text-mid);
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      transition: all 0.22s; text-align: left;
+    }
+    .payment-trigger-btn:hover { border-color: var(--pink); color: var(--text); }
+    .payment-trigger-btn.active { border-color: var(--pink); color: var(--text); background: var(--pink-pale); }
+    .payment-trigger-icon { font-size: 16px; }
+    .payment-trigger-chevron { margin-left: auto; font-size: 10px; color: var(--text-dim); transition: transform 0.22s; }
+    .payment-trigger-btn.active .payment-trigger-chevron { transform: rotate(180deg); }
+
+    .payment-panel {
+      overflow: hidden; max-height: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+    .payment-panel.open { max-height: 600px; opacity: 1; }
+
+    .payment-methods {
+      display: flex; flex-direction: column; gap: 8px;
+      margin-top: 14px;
+    }
+    .pay-method {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 16px; border: 1.5px solid var(--border);
+      border-radius: 12px; cursor: pointer;
+      transition: border-color 0.18s, background 0.18s;
+    }
+    .pay-method:hover { border-color: var(--pink-light); background: var(--bg-soft); }
+    .pay-method.selected-pay { border-color: var(--pink); background: var(--pink-pale); }
+    .pay-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid var(--border-soft); }
+    .pay-label { font-size: 13px; color: var(--text); font-weight: 600; flex: 1; }
+    .pay-sub { font-size: 10px; color: var(--text-dim); display: block; font-weight: 400; }
+    .pay-radio { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--border); transition: all 0.18s; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .pay-method.selected-pay .pay-radio { border-color: var(--pink); background: var(--pink); }
+    .pay-method.selected-pay .pay-radio::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+
+    .card-form {
+      margin-top: 14px; padding: 16px;
+      background: var(--bg); border: 1px solid var(--border-soft); border-radius: 12px;
+      display: none;
+    }
+    .card-form.show { display: block; }
+    .card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .card-input {
+      width: 100%; padding: 10px 12px;
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 8px; font-family: var(--sans); font-size: 13px; color: var(--text);
+      outline: none; transition: border-color 0.2s;
+    }
+    .card-input:focus { border-color: var(--pink-light); }
+    .card-label { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); font-weight: 700; margin-bottom: 5px; display: block; }
+    .card-brand { position: relative; }
+    .card-brand-icons { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; gap: 4px; font-size: 18px; }
+
+    /* ── ORDER SUMMARY ── */
+    .order-summary {
+      background: var(--bg-soft);
+      border: 1px solid var(--border-soft);
+      border-radius: 14px; padding: 16px 18px;
+      margin-bottom: 16px;
+    }
+    .order-line {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-size: 12px; color: var(--text-mid); margin-bottom: 8px;
+    }
+    .order-line:last-child { margin-bottom: 0; }
+    .order-line.total {
+      border-top: 1px solid var(--border); padding-top: 10px; margin-top: 6px;
+      font-size: 14px; color: var(--text); font-weight: 700;
+    }
+    .order-price { font-weight: 600; color: var(--text); }
+    .order-price.pink { color: var(--pink); }
+
+    /* ── RESERVE BTN ── */
+    .reserve-btn {
+      width: 100%; padding: 15px;
+      background: var(--pink); color: #fff;
+      font-family: var(--sans); font-size: 13px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      border: none; border-radius: 12px; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .reserve-btn:hover { background: var(--pink-hover); transform: translateY(-1px); }
+    .reserve-btn:disabled { background: var(--text-dim); cursor: not-allowed; transform: none; }
+
+    /* ── SUCCESS MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(65,39,34,0.45);
+      backdrop-filter: blur(6px); z-index: 200;
+      display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--bg-card); border-radius: 24px; padding: 48px 40px;
+      max-width: 440px; width: 90%; text-align: center;
+      box-shadow: 0 40px 80px rgba(65,39,34,0.18);
+      animation: modalIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.85) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-cherry { font-size: 52px; margin-bottom: 16px; display: block; }
+    .modal-title { font-family: var(--display); font-size: 2rem; color: var(--text); margin-bottom: 10px; }
+    .modal-body { font-size: 14px; color: var(--text-mid); line-height: 1.75; margin-bottom: 28px; }
+    .modal-close {
+      background: var(--pink); color: #fff; border: none; border-radius: 100px;
+      padding: 13px 36px; font-family: var(--sans); font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .modal-close:hover { background: var(--pink-hover); }
+
+    /* camera emoji placeholder */
+    .cam-emoji-placeholder {
+      font-size: 52px; display: flex; align-items: center; justify-content: center;
+      width: 100%; height: 100%;
+    }
+
+    @media (max-width: 900px) {
+      .reservation-layout { grid-template-columns: 1fr; }
+      .right-panel { position: static; max-height: none; border-left: none; border-top: 1px solid var(--border-soft); }
+      .camera-grid { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 580px) {
+      .camera-grid { grid-template-columns: 1fr; }
+      .left-panel { padding: 20px; }
+      .right-section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <span style="font-size:15px">🍒</span>
+    <span class="nav-brand">CherryFlash</span>
+    <span class="nav-sub">체리플래시</span>
+  </div>
+<div class="nav-links">
+  <a href="../cherryflash (main).html#collection">collection</a>
+  <a href="../cherryflash (main).html#how-it-works">how it works</a>
+  <a href="../cherryflash (main).html#mood-journal">mood journal</a>
+  <a href="../cherryflash (main).html#about-us">about us</a>
+</div>
+<a href="../cherryflash (main).html#collection" class="nav-cta">🍒 back to shop</a>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1 class="page-header-title">reserve a camera</h1>
+  <span class="page-header-sub">· pick, date, confirm</span>
+</div>
+
+<!-- MAIN -->
+<div class="reservation-layout">
+
+  <!-- ────────── LEFT PANEL ────────── -->
+  <div class="left-panel">
+
+    <!-- STEP 1: Camera Selection -->
+    <div class="step-label">01 · choose your camera</div>
+    <h2 class="section-title">which one feels like you?</h2>
+
+    <div class="camera-grid" id="cameraGrid">
+
+      <!-- Sony Cybershot DSC-W320 -->
+      <div class="camera-card" data-camera="sony-w320" data-name="Sony Cybershot DSC-W320" data-price="15000" data-available="true" onclick="selectCamera(this)">
+        <div class="cam-badge available">available</div>
+        <div class="selected-check">✓</div>
+        <div class="camera-img-wrap">
+          <img src="camera1.png" alt="Sony Cybershot DSC-W320" />
+        </div>
+        <div class="camera-info">
+          <div class="camera-type">compact digital</div>
+          <div class="camera-name">Sony Cybershot DSC-W320</div>
+          <div class="camera-price">₩15,000 <span class="camera-price-note">/ rental</span></div>
+        </div>
+      </div>
+
+      <!-- Casio Exilim EX-S12 -->
+      <div class="camera-card" data-camera="fuji-jv200" data-name="Fujifilm FinePix JV200" data-price="15000" data-available="true" onclick="selectCamera(this)">
+        <div class="cam-badge available">available</div>
+        <div class="selected-check">✓</div>
+        <div class="camera-img-wrap">
+          <img src="camera2.png" alt="Casio Exilim EX-S12" />
+        </div>
+        <div class="camera-info">
+          <div class="camera-type">compact digital</div>
+          <div class="camera-name">Casio Exilim EX-S12</div>
+          <div class="camera-price">₩15,000 <span class="camera-price-note">/ rental</span></div>
+        </div>
+      </div>
+
+      <!-- Fujifilm FinePix JV200 -->
+      <div class="camera-card" data-camera="Fujifilm FinePix JV2005" data-name="Fujifilm FinePix JV200" data-price="15000" data-available="false" onclick="selectCamera(this)">
+        <div class="cam-badge unavailable">unavailable</div>
+        <div class="selected-check">✓</div>
+        <div class="camera-img-wrap">
+          <img src="camera 3.png" alt="Fujifilm FinePix JV200" />
+        </div>
+        <div class="camera-info">
+          <div class="camera-type">compact digital</div>
+          <div class="camera-name">Canon IXUS 185</div>
+          <div class="camera-price">₩15,000 <span class="camera-price-note">/ rental</span></div>
+        </div>
+      </div>
+
+      <!-- Nikon Coolpix S2900 -->
+      <div class="camera-card" data-camera="Nikon Coolpix S2900" data-name="Nikon Coolpix S2900" data-price="14000" data-available="true" onclick="selectCamera(this)">
+        <div class="cam-badge available">available</div>
+        <div class="selected-check">✓</div>
+        <div class="camera-img-wrap">
+          <img src="camera 4.png" alt="Nikon Coolpix S2900" />
+        </div>
+        <div class="camera-info">
+          <div class="camera-type">35mm film</div>
+          <div class="camera-name">Nikon Coolpix S2900</div>
+          <div class="camera-price">₩14,000 <span class="camera-price-note">/ rental</span></div>
+        </div>
+      </div>
+
+      <!-- Samsung VLUU PL150 -->
+      <div class="camera-card" data-camera="olympus-mju2" data-name="Samsung VLUU PL150" data-price="14000" data-available="true" onclick="selectCamera(this)">
+        <div class="cam-badge available">available</div>
+        <div class="selected-check">✓</div>
+        <div class="camera-img-wrap">
+          <img src="camera 3.png" alt="Nikon Coolpix S2900" />
+        </div>
+        <div class="camera-info">
+          <div class="camera-type">35mm film · premium</div>
+          <div class="camera-name">Samsung VLUU PL150</div>
+          <div class="camera-price">₩14,000 <span class="camera-price-note">/ rental</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: Calendar -->
+    <div class="step-label">02 · pick your dates</div>
+    <h2 class="section-title">when will you be shooting?</h2>
+
+    <div class="calendar-wrap">
+      <div class="cal-header">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+        <span class="cal-month" id="calMonth">April 2026</span>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-body">
+        <div class="cal-days-header">
+          <div class="cal-day-label">Sun</div>
+          <div class="cal-day-label">Mon</div>
+          <div class="cal-day-label">Tue</div>
+          <div class="cal-day-label">Wed</div>
+          <div class="cal-day-label">Thu</div>
+          <div class="cal-day-label">Fri</div>
+          <div class="cal-day-label">Sat</div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+      <div class="cal-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--pink)"></div>
+          <span>selected range</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--red-pale); border:1px solid var(--red)"></div>
+          <span>unavailable</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--bg-soft); border:1px solid var(--border)"></div>
+          <span>available</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Date Summary -->
+    <div class="date-summary">
+      <div class="date-box">
+        <div class="date-box-label">Pick-up date</div>
+        <div class="date-box-val empty" id="startDateDisplay">— select start</div>
+      </div>
+      <div class="duration-box" id="durationBox">
+        <div class="duration-box-label">days</div>
+        <div class="duration-box-val" id="durationVal">—</div>
+        <div class="duration-box-unit">rental</div>
+      </div>
+      <div class="date-box">
+        <div class="date-box-label">Return date</div>
+        <div class="date-box-val empty" id="endDateDisplay">— select end</div>
+      </div>
+    </div>
+<div class="pickup-section">
+  <div class="pickup-head">
+    <span class="pickup-step">03 · choose your pick-up location</span>
+    <h3 class="pickup-title">where would you like to collect it?</h3>
+    <p class="pickup-note">
+      Choose the pick-up location that feels most convenient for you. The exact collection details,
+      access instructions, and reservation guidance will be shared in your confirmation email after booking.
+    </p>
+  </div>
+
+  <div class="pickup-grid">
+    <label class="pickup-card" onclick="selectPickup(this, 'Anguk')">
+      <input type="radio" name="pickupLocation" value="Anguk" hidden />
+      <div class="pickup-name">Anguk</div>
+      <div class="pickup-sub">Outside the B2F gate toward Exits No.1 and 6</div>
+      <div class="pickup-time">05:00–24:00</div>
+      <a href="https://naver.me/5JpkWgRu" target="_blank" class="pickup-link" onclick="event.stopPropagation()">view map ↗</a>
+    </label>
+
+    <label class="pickup-card" onclick="selectPickup(this, 'DDP')">
+      <input type="radio" name="pickupLocation" value="DDP" hidden />
+      <div class="pickup-name">DDP</div>
+      <div class="pickup-sub">Around Exit No.1 on B1F</div>
+      <div class="pickup-time">location details shared by email</div>
+      <a href="https://naver.me/FgHljtnG" target="_blank" class="pickup-link" onclick="event.stopPropagation()">view map ↗</a>
+    </label>
+
+    <label class="pickup-card" onclick="selectPickup(this, 'Seongsu')">
+      <input type="radio" name="pickupLocation" value="Seongsu" hidden />
+      <div class="pickup-name">Seongsu</div>
+      <div class="pickup-sub">서울 성동구 연무장9길 10-1 2층 성수보관함</div>
+      <div class="pickup-time">location details shared by email</div>
+      <a href="https://naver.me/FzsAn4Wk" target="_blank" class="pickup-link" onclick="event.stopPropagation()">view map ↗</a>
+    </label>
+  </div>
+</div>
+</div>
+  <!-- ────────── RIGHT PANEL ────────── -->
+
+  <div class="right-panel">
+
+    <!-- BOOKING INFO -->
+    <div class="right-section">
+      <div class="right-section-title">Booking information</div>
+      <p class="right-section-sub">To complete your reservation, please provide a valid email address and the identification details of the person responsible for the booking. This information is used only for reservation confirmation, customer contact, and rental management.</p>
+
+      <div class="form-group">
+        <label class="form-label">full name</label>
+        <input class="form-input" type="text" placeholder="your full name" id="inputName" oninput="updateSummary()" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">email address</label>
+        <input class="form-input" type="email" placeholder="your@email.com" id="inputEmail" oninput="updateSummary()" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">phone number</label>
+        <input class="form-input" type="tel" placeholder="010-0000-0000" id="inputPhone" oninput="updateSummary()" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">ID number (last 7 digits)</label>
+        <input class="form-input" type="text" placeholder="e.g. 9901231" maxlength="7" id="inputID" oninput="updateSummary()" />
+      </div>
+    </div>
+
+    <!-- PAYMENT SECTION -->
+    <div class="right-section">
+      <div class="right-section-title">Payment method</div>
+<p class="right-section-sub" style="margin-bottom:14px;">Choose a preferred payment method for checkout reference. Final payment confirmation will be completed after reservation review.</p>
+      <button class="payment-trigger-btn" id="payTrigger" onclick="togglePayment()">
+        <span class="payment-trigger-icon">💳</span>
+        <span id="payTriggerLabel">Choose payment method</span>
+        <span class="payment-trigger-chevron">▼</span>
+      </button>
+
+      <div class="payment-panel" id="paymentPanel">
+        <div class="payment-methods">
+
+          <div class="pay-method" onclick="selectPayment(this, 'card')" data-pay="card">
+            <div class="pay-icon">💳</div>
+            <div>
+              <div class="pay-label">Debit / Credit Card</div>
+              <span class="pay-sub">Visa, Mastercard, local cards</span>
+            </div>
+            <div class="pay-radio"></div>
+          </div>
+
+          <div class="pay-method" onclick="selectPayment(this, 'kakao')" data-pay="kakao">
+            <div class="pay-icon">💛</div>
+            <div>
+              <div class="pay-label">KakaoPay</div>
+              <span class="pay-sub">pay with kakao</span>
+            </div>
+            <div class="pay-radio"></div>
+          </div>
+
+          <div class="pay-method" onclick="selectPayment(this, 'toss')" data-pay="toss">
+            <div class="pay-icon">🔵</div>
+            <div>
+              <div class="pay-label">Toss Pay</div>
+              <span class="pay-sub">fast & secure korean payment</span>
+            </div>
+            <div class="pay-radio"></div>
+          </div>
+
+          <div class="pay-method" onclick="selectPayment(this, 'transfer')" data-pay="transfer">
+            <div class="pay-icon">🏦</div>
+            <div>
+              <div class="pay-label">Bank Transfer</div>
+              <span class="pay-sub">계좌이체 · direct transfer</span>
+            </div>
+            <div class="pay-radio"></div>
+          </div>
+
+        </div>
+
+        <!-- Card form (only for card) -->
+        <div class="card-form" id="cardForm">
+          <div class="form-group" style="margin-bottom:10px;">
+            <label class="card-label">card number</label>
+            <div class="card-brand" style="position:relative;">
+              <input class="card-input" type="text" placeholder="5534  2834  8857  5370" maxlength="19" oninput="formatCard(this)" />
+              <div class="card-brand-icons">💳</div>
+            </div>
+          </div>
+          <div class="card-row">
+            <div>
+              <label class="card-label">expiry date</label>
+              <input class="card-input" type="text" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)" />
+            </div>
+            <div>
+              <label class="card-label">CVV</label>
+              <input class="card-input" type="password" placeholder="···" maxlength="3" />
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:10px; margin-bottom:0;">
+            <label class="card-label">cardholder name</label>
+            <input class="card-input" type="text" placeholder="NAME ON CARD" style="text-transform:uppercase;" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGREEMENT -->
+    <div class="right-section">
+      <div class="right-section-title">Agreement</div>
+      <div class="agreement-list" id="agreementList">
+        <label class="agreement-item">
+          <input type="checkbox" onchange="checkAgreements()" />
+          <div class="custom-check"><span class="custom-check-mark">✓</span></div>
+          <span>I have read and understood the CherryFlash rental guidelines.</span>
+        </label>
+        <label class="agreement-item">
+          <input type="checkbox" onchange="checkAgreements()" />
+          <div class="custom-check"><span class="custom-check-mark">✓</span></div>
+          <span>I agree to handle the rented items with care and return them on time.</span>
+        </label>
+        <label class="agreement-item">
+          <input type="checkbox" onchange="checkAgreements()" />
+          <div class="custom-check"><span class="custom-check-mark">✓</span></div>
+          <span>I understand that late return, loss, missing items, or damage may result in additional charges.</span>
+        </label>
+        <label class="agreement-item">
+          <input type="checkbox" onchange="checkAgreements()" />
+          <div class="custom-check"><span class="custom-check-mark">✓</span></div>
+          <span>I confirm that the email and personal information provided are accurate and belong to the person responsible for this booking.</span>
+        </label>
+        <label class="agreement-item">
+          <input type="checkbox" onchange="checkAgreements()" />
+          <div class="custom-check"><span class="custom-check-mark">✓</span></div>
+          <span>I understand that the person named in this reservation is fully responsible for the rented items during the rental period.</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- ORDER SUMMARY & CTA -->
+    <div class="right-section">
+      <div class="right-section-title" style="margin-bottom:14px;">Order summary</div>
+      <div class="order-summary">
+        <div class="order-line">
+          <span id="summaryCamera">No camera selected</span>
+          <span class="order-price" id="summaryPricePerDay">₩—</span>
+        </div>
+        <div class="order-line">
+          <span id="summaryDays">× — days</span>
+          <span></span>
+        </div>
+        <div class="order-line total">
+          <span>Total</span>
+          <span class="order-price pink" id="summaryTotal">₩—</span>
+        </div>
+      </div>
+
+      <button class="reserve-btn" id="reserveBtn" onclick="submitReservation()" disabled>
+        complete reservation →
+      </button>
+      <p style="font-size:10px; color:var(--text-dim); text-align:center; margin-top:10px; line-height:1.6;">
+        By completing this reservation, you agree to CherryFlash's<br>rental terms and conditions.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <span class="modal-cherry">🍒</span>
+    <div class="modal-title">thank you for your reservation request!</div>
+    <p class="modal-body" id="modalBody">
+      your rental is on its way.<br>
+      we'll send a confirmation to your email shortly.<br><br>
+      <em>thank you for choosing CherryFlash 🌸</em>
+    </p>
+    <button class="modal-close" onclick="closeModal()">back to shop →</button>
+  </div>
+</div>
+
+<script>
+  // ── STATE ──
+  let selectedCamera = null;
+  let selectedPayment = null;
+  let startDate = null;
+  let endDate = null;
+  let allAgreementsChecked = false;
+  let currentMonth = 3; // 0-indexed; April
+  let currentYear = 2026;
+  let selectingEnd = false;
+
+  // Simulate unavailable dates for selected camera (blocklist by camera)
+  const unavailableDates = {
+    'sony-w320':  ['2026-04-12','2026-04-13','2026-04-14','2026-04-20','2026-04-21'],
+    'fuji-jv200': ['2026-04-15','2026-04-16','2026-04-22'],
+    'kodak-m35':  ['2026-04-18','2026-04-19','2026-04-25','2026-04-26'],
+    'olympus-mju2': ['2026-04-11','2026-04-28','2026-04-29'],
+    'default':    []
+  };
+
+  // ── CAMERA SELECTION ──
+  function selectCamera(card) {
+    if (card.dataset.available === 'false') return;
+
+    document.querySelectorAll('.camera-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+
+    selectedCamera = {
+      id: card.dataset.camera,
+      name: card.dataset.name,
+      price: parseInt(card.dataset.price)
+    };
+
+    // Reset dates when changing camera
+    startDate = null;
+    endDate = null;
+    selectingEnd = false;
+    renderCalendar();
+    updateDateDisplay();
+    updateSummary();
+    validateForm();
+  }
+
+  // ── CALENDAR ──
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function getUnavailable() {
+    if (!selectedCamera) return [];
+    return unavailableDates[selectedCamera.id] || unavailableDates['default'];
+  }
+
+  function renderCalendar() {
+    const grid = document.getElementById('calGrid');
+    const header = document.getElementById('calMonth');
+    grid.innerHTML = '';
+    header.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const today = new Date(2026, 3, 10); // April 10, 2026
+
+    const unavail = getUnavailable();
+
+    // Empty cells
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      empty.classList.add('cal-cell', 'empty');
+      grid.appendChild(empty);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cal-cell');
+      cell.textContent = d;
+
+      const thisDate = new Date(currentYear, currentMonth, d);
+      const iso = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
+      const isToday = thisDate.toDateString() === today.toDateString();
+      const isPast = thisDate < today;
+      const isUnavail = unavail.includes(iso);
+
+      if (isToday) cell.classList.add('today');
+
+      if (isPast) {
+        cell.classList.add('past');
+      } else if (isUnavail) {
+        cell.classList.add('unavailable');
+      } else {
+        cell.classList.add('available');
+        cell.addEventListener('click', () => pickDate(thisDate, iso));
+      }
+
+      // Range highlighting
+      if (startDate && endDate) {
+        if (iso === toISO(startDate)) cell.classList.add('selected-start');
+        if (iso === toISO(endDate)) cell.classList.add('selected-end');
+        if (thisDate > startDate && thisDate < endDate) cell.classList.add('in-range');
+        if (iso === toISO(startDate) && iso === toISO(endDate)) {
+          cell.classList.add('selected-start','selected-end');
+        }
+      } else if (startDate && iso === toISO(startDate)) {
+        cell.classList.add('selected-start','selected-end');
+      }
+
+      grid.appendChild(cell);
+    }
+  }
+
+  function toISO(date) {
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+  }
+
+  function pickDate(date, iso) {
+    if (!selectedCamera) {
+      alert('✨ Please select a camera first!');
+      return;
+    }
+    if (!startDate || selectingEnd === false) {
+      startDate = date;
+      endDate = null;
+      selectingEnd = true;
+    } else {
+      if (date < startDate) {
+        startDate = date;
+        endDate = null;
+        selectingEnd = true;
+      } else {
+        endDate = date;
+        selectingEnd = false;
+      }
+    }
+    renderCalendar();
+    updateDateDisplay();
+    updateSummary();
+    validateForm();
+  }
+
+  function changeMonth(dir) {
+    currentMonth += dir;
+    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+    if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+    renderCalendar();
+  }
+
+  function updateDateDisplay() {
+    const startEl = document.getElementById('startDateDisplay');
+    const endEl = document.getElementById('endDateDisplay');
+    const durVal = document.getElementById('durationVal');
+
+    if (startDate) {
+      startEl.textContent = startDate.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+      startEl.classList.remove('empty');
+    } else {
+      startEl.textContent = '— select start';
+      startEl.classList.add('empty');
+    }
+
+    if (endDate) {
+      endEl.textContent = endDate.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+      endEl.classList.remove('empty');
+      const days = Math.round((endDate - startDate) / 86400000) + 1;
+      durVal.textContent = days;
+    } else {
+      endEl.textContent = '— select end';
+      endEl.classList.add('empty');
+      durVal.textContent = '—';
+    }
+  }
+let selectedPickupLocation = "";
+
+function selectPickup(card, location) {
+  document.querySelectorAll(".pickup-card").forEach(el => el.classList.remove("active"));
+  card.classList.add("active");
+
+  const radio = card.querySelector('input[type="radio"]');
+  if (radio) radio.checked = true;
+
+  selectedPickupLocation = location;
+  validateForm();
+  updateSummary();
+}
+  // ── PAYMENT ──
+  function togglePayment() {
+    const panel = document.getElementById('paymentPanel');
+    const btn = document.getElementById('payTrigger');
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    btn.classList.toggle('active', !isOpen);
+  }
+
+  function selectPayment(el, type) {
+    document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected-pay'));
+    el.classList.add('selected-pay');
+    selectedPayment = type;
+
+    const cardForm = document.getElementById('cardForm');
+    cardForm.classList.toggle('show', type === 'card');
+
+    const label = el.querySelector('.pay-label').textContent;
+    document.getElementById('payTriggerLabel').textContent = label + ' selected';
+    validateForm();
+  }
+
+  // ── CARD FORMATTING ──
+  function formatCard(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,16);
+    input.value = v.replace(/(.{4})/g,'$1  ').trim();
+  }
+  function formatExpiry(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,4);
+    if (v.length >= 2) v = v.slice(0,2) + ' / ' + v.slice(2);
+    input.value = v;
+  }
+
+  // ── AGREEMENT ──
+  function checkAgreements() {
+    const boxes = document.querySelectorAll('#agreementList input[type="checkbox"]');
+    allAgreementsChecked = [...boxes].every(b => b.checked);
+    validateForm();
+  }
+
+  // ── SUMMARY ──
+  function updateSummary() {
+    const camEl = document.getElementById('summaryCamera');
+    const priceEl = document.getElementById('summaryPricePerDay');
+    const daysEl = document.getElementById('summaryDays');
+    const totalEl = document.getElementById('summaryTotal');
+
+    if (selectedCamera) {
+      camEl.textContent = selectedCamera.name;
+      priceEl.textContent = `₩${selectedCamera.price.toLocaleString()} × day`;
+    } else {
+      camEl.textContent = 'No camera selected';
+      priceEl.textContent = '₩—';
+    }
+
+    if (startDate && endDate && selectedCamera) {
+      const days = Math.round((endDate - startDate) / 86400000) + 1;
+      daysEl.textContent = `× ${days} day${days>1?'s':''}`;
+      totalEl.textContent = `₩${(selectedCamera.price * days).toLocaleString()}`;
+    } else {
+      daysEl.textContent = '× — days';
+      totalEl.textContent = '₩—';
+    }
+  }
+
+  // ── VALIDATE ──
+function validateForm() {
+  const btn = document.getElementById('reserveBtn');
+  const firstAgreement = document.querySelector('#agreementList input[type="checkbox"]');
+const basicReady = selectedCamera && startDate && endDate && selectedPickupLocation && firstAgreement && firstAgreement.checked;
+btn.disabled = !basicReady;
+}
+
+  // ── SUBMIT ──
+function submitReservation() {
+  const name = document.getElementById('inputName').value.trim();
+  const days = Math.round((endDate - startDate) / 86400000) + 1;
+  const total = (selectedCamera.price * days).toLocaleString();
+  const pickupStr = selectedPickupLocation;
+
+  document.getElementById('modalBody').innerHTML = `
+    <strong>${name}</strong>, your <em>${selectedCamera.name}</em> rental is confirmed!<br><br>
+    Pick-up: <strong>${pickupStr}</strong> · ${days} day${days>1?'s':''}<br>
+    Total: <strong>₩${total}</strong> · paid via ${selectedPayment}<br><br>
+    A confirmation will be sent to your email shortly. 🌸
+  `;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal() {
+  window.location.href = '../00 thank you page/cherryflash_thankyou.html';
+}
+  // ── INIT ──
+  renderCalendar();
+</script>
+</body>
+</html>
