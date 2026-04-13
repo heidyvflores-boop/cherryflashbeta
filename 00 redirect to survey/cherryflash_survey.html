@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CherryFlash · Share Your Thoughts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Sofia+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8f4f5;
+      --bg-blush: #f6e6e9;
+      --bg-card: #fffafa;
+      --pink: #ae5969;
+      --pink-light: #ce8a97;
+      --pink-pale: #f2dde1;
+      --pink-hover: #964b59;
+      --text: #412722;
+      --text-mid: #634a45;
+      --text-dim: #b9939b;
+      --border: rgba(99,74,69,0.14);
+      --border-soft: rgba(65,39,34,0.08);
+      --display: 'Marck Script', cursive;
+      --sans: 'Sofia Sans', sans-serif;
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── SOFT GRAIN OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      background: rgba(248,244,245,0.96); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px; height: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-left { display: flex; align-items: center; gap: 6px; }
+    .nav-brand { font-family: var(--display); font-size: 21px; color: var(--text); }
+    .nav-sub { font-size: 10px; color: var(--text-dim); letter-spacing: 0.04em; margin-left: 4px; }
+    .nav-back {
+      font-size: 11px; letter-spacing: 0.08em; color: var(--text-mid);
+      text-decoration: none; display: flex; align-items: center; gap: 6px;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--pink); }
+
+    /* ── PAGE ── */
+    .page {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 80px 24px 60px;
+      position: relative; z-index: 1;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 28px;
+      max-width: 560px; width: 100%;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(65,39,34,0.07), 0 6px 18px rgba(174,89,105,0.05);
+      animation: cardIn 0.65s cubic-bezier(0.34,1.25,0.64,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(32px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* top blush band */
+    .card-band {
+      background: var(--bg-blush);
+      border-bottom: 1px solid var(--border-soft);
+      padding: 28px 36px 24px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .band-icon { font-size: 36px; line-height: 1; }
+    .band-text {}
+    .band-kicker {
+      font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--text-dim); font-weight: 700; margin-bottom: 4px;
+    }
+    .band-title {
+      font-family: var(--display); font-size: 1.6rem; color: var(--text); line-height: 1.15;
+    }
+    .band-title .pk { color: var(--pink); }
+
+    /* body */
+    .card-body { padding: 32px 36px 36px; }
+
+    .card-question {
+      font-family: var(--display); font-size: 1.55rem; color: var(--text);
+      line-height: 1.35; margin-bottom: 14px;
+    }
+
+    .card-desc {
+      font-size: 14px; color: var(--text-mid); line-height: 1.85;
+      font-weight: 300; margin-bottom: 28px;
+    }
+    .card-desc strong { color: var(--text); font-weight: 600; }
+
+    /* divider */
+    hr.soft {
+      border: none; border-top: 1px dashed var(--border);
+      margin: 0 0 26px;
+    }
+
+    /* checklist */
+    .checklist {
+      display: flex; flex-direction: column; gap: 10px;
+      margin-bottom: 30px;
+    }
+    .check-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--text-mid);
+    }
+    .check-dot {
+      width: 20px; height: 20px; min-width: 20px;
+      border-radius: 50%; background: var(--pink-pale);
+      border: 1px solid rgba(174,89,105,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: var(--pink);
+    }
+
+    /* CTA */
+    .cta-wrap {
+      display: flex; flex-direction: column; gap: 12px; align-items: stretch;
+    }
+
+    .survey-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      background: var(--pink); color: #fff;
+      font-family: var(--sans); font-size: 13px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 16px 28px; border-radius: 14px; border: none;
+      text-decoration: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 8px 24px rgba(174,89,105,0.22);
+      position: relative; overflow: hidden;
+    }
+.survey-btn.primary {
+  background: var(--pink);
+  color: white;
+}
+
+.survey-btn.secondary {
+  background: #f5f5f5;
+  color: var(--text);
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 10px 18px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--bg-card);
+  transition: background 0.2s, transform 0.15s, color 0.2s;
+}
+
+.back-link:hover {
+  background: var(--bg-blush);
+  color: var(--pink);
+  transform: translateY(-1px);
+}
+
+.back-link:visited {
+  color: var(--text);
+}
+
+.back-link:active {
+  color: var(--text);
+}
+    .survey-btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .survey-btn:hover {
+      background: var(--pink-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(174,89,105,0.28);
+    }
+    .survey-btn:active { transform: translateY(0); }
+    .btn-arrow { font-size: 16px; transition: transform 0.2s; }
+    .survey-btn:hover .btn-arrow { transform: translateX(4px); }
+
+    .not-yet-btn {
+      background: transparent; border: 1px solid var(--border);
+      border-radius: 14px; padding: 13px 28px;
+      font-family: var(--sans); font-size: 12px; color: var(--text-dim);
+      letter-spacing: 0.08em; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      text-decoration: none; text-align: center;
+      display: block;
+    }
+    .not-yet-btn:hover { border-color: var(--pink-light); color: var(--text-mid); }
+
+    /* footer strip */
+    .card-foot {
+      background: var(--bg-blush);
+      border-top: 1px solid var(--border-soft);
+      padding: 14px 36px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px;
+    }
+    .foot-note { font-size: 10px; color: var(--text-dim); letter-spacing: 0.06em; }
+    .foot-cherry { font-size: 13px; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      padding: 11px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 10px; color: var(--text-dim); letter-spacing: 0.06em;
+      border-top: 1px solid var(--border-soft);
+      background: rgba(248,244,245,0.93); backdrop-filter: blur(10px);
+      z-index: 50;
+    }
+    .footer-brand { font-family: var(--display); font-size: 14px; color: var(--text-mid); }
+
+    @media (max-width: 560px) {
+      .card-body { padding: 24px 22px 28px; }
+      .card-band { padding: 22px 22px 18px; }
+      .card-foot { padding: 12px 22px; }
+      footer { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <span style="font-size:15px">🍒</span>
+    <span class="nav-brand">CherryFlash</span>
+    <span class="nav-sub">체리플래시</span>
+  </div>
+<a href="../cherryflash (main).html" class="back-link">
+  ← back to site
+</a>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+  <div class="card">
+
+    <!-- BAND -->
+    <div class="card-band">
+      <span class="band-icon">🌸</span>
+      <div class="band-text">
+        <div class="band-kicker">beta feedback · 2026</div>
+        <div class="band-title">write to <span class="pk">us</span></div>
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="card-body">
+
+      <p class="card-question">
+        Are you done checking our beta website and ready to start the survey?
+      </p>
+
+      <p class="card-desc">
+        Your feedback means the world to us. We are <strong>students</strong> trying to build something real and your honest thoughts help us make CherryFlash better for everyone.<br><br>
+        The survey takes <strong>less than 3 minutes</strong> and covers your experience with our website and overall service. No right or wrong answers, just your honest feeling. 🍒
+      </p>
+
+      <hr class="soft" />
+
+      <div class="checklist">
+        <div class="check-item">
+          <div class="check-dot">✓</div>
+          <span>browsed our camera collection</span>
+        </div>
+        <div class="check-item">
+          <div class="check-dot">✓</div>
+          <span>explored the reservation flow</span>
+        </div>
+        <div class="check-item">
+          <div class="check-dot">✓</div>
+          <span>got a feel for the CherryFlash vibe</span>
+        </div>
+        <div class="check-item">
+          <div class="check-dot">→</div>
+          <span style="color:var(--text); font-weight:600;">ready to share your thoughts?</span>
+        </div>
+      </div>
+
+      <div class="cta-wrap">
+        <a
+          href="https://ewha.az1.qualtrics.com/jfe/form/SV_6R5ehbnjn1LIsqG"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="survey-btn"
+        >
+          <span>yes, take me to the survey</span>
+          <span class="btn-arrow">→</span>
+        </a>
+<a href="../cherryflash (main).html" class="survey-btn secondary">
+  not yet, go back to the website
+</a>
+      </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-brand">🍒 CherryFlash</span>
+  <span>체리플래시 · 서울 · beta 2026</span>
+  <span>thank you for your time 🌸</span>
+</footer>
+
+</body>
+</html>
